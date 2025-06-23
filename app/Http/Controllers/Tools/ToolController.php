@@ -18,7 +18,10 @@ class ToolController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->middleware('permission:manage tools')->except(['index', 'show']);
+        $this->middleware('permission:view tools')->only(['index', 'show']);
+        $this->middleware('permission:create tools')->only(['create', 'store']);
+        $this->middleware('permission:edit tools')->only(['edit', 'update']);
+        $this->middleware('permission:delete tools')->only(['destroy', 'bulkAction']);
     }
 
     public function index(Request $request)
@@ -71,7 +74,6 @@ class ToolController extends Controller
 
     public function create()
     {
-        $this->authorize('create', Tool::class);
 
         $warehouses = Warehouse::where('is_active', true)->get();
         $categories = Tool::distinct()->pluck('category')->filter()->sort();
@@ -110,7 +112,6 @@ class ToolController extends Controller
 
     public function edit(Tool $tool)
     {
-        $this->authorize('update', $tool);
 
         $warehouses = Warehouse::where('is_active', true)->get();
         $categories = Tool::distinct()->pluck('category')->filter()->sort();
@@ -134,7 +135,6 @@ class ToolController extends Controller
 
     public function destroy(Tool $tool)
     {
-        $this->authorize('delete', $tool);
 
         // Check if tool has active loans
         if ($tool->toolLoanItems()->whereHas('toolLoan', function($query) {
@@ -165,19 +165,16 @@ class ToolController extends Controller
 
         switch ($request->action) {
             case 'delete':
-                $this->authorize('delete', Tool::class);
                 $tools->delete();
                 $message = "{$count} tools deleted successfully.";
                 break;
 
             case 'update_condition':
-                $this->authorize('update', Tool::class);
                 $tools->update(['condition' => $request->condition]);
                 $message = "{$count} tools condition updated to {$request->condition}.";
                 break;
 
             case 'move_warehouse':
-                $this->authorize('update', Tool::class);
                 $warehouse = Warehouse::find($request->warehouse_id);
                 $tools->update(['warehouse_id' => $request->warehouse_id]);
                 $message = "{$count} tools moved to {$warehouse->name}.";

@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
@@ -59,14 +61,49 @@ class InvitationController extends Controller
                     ]
                 );
 
+                // Log invitation creation
+                Log::info('Invitation created', [
+                    'invitation_id' => $invitation->id,
+                    'email' => $invitation->email,
+                    'role' => $invitation->role
+                ]);
+
+                // Check queue configuration
+                $queueConnection = config('queue.default');
+                Log::info('Queue configuration', [
+                    'connection' => $queueConnection,
+                    'mail_driver' => config('mail.default')
+                ]);
+
+                // Check queue configuration
+                $queueConnection = config('queue.default');
+                Log::info('Queue configuration', [
+                    'connection' => $queueConnection,
+                    'mail_driver' => config('mail.default')
+                ]);
+
                 // Queue invitation email
-                SendInvitationEmail::dispatch($invitation);
+                if ($queueConnection === 'sync') {
+                    // If using sync queue, send immediately
+                    Log::info('Sending invitation email synchronously');
+                    SendInvitationEmail::dispatchSync($invitation);
+                } else {
+                    // Queue the email
+                    Log::info('Queueing invitation email');
+                    SendInvitationEmail::dispatch($invitation);
+                }
             });
 
             return redirect()->route('invitations.create')
-                ->with('success', 'Invitación enviada exitosamente a ' . $request->email);
+                ->with('success', 'Invitación enviada exitosamente a ' . $request->email . '. Revisa los logs si no llega el correo.');
 
         } catch (\Exception $e) {
+            Log::error('Failed to create invitation', [
+                'email' => $request->email,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
             return back()->withInput()
                 ->with('error', 'Error al enviar la invitación: ' . $e->getMessage());
         }
@@ -174,12 +211,31 @@ class InvitationController extends Controller
                 'expires_at' => now()->addHours(24)
             ]);
 
+            // Log resend attempt
+            Log::info('Resending invitation email', [
+                'invitation_id' => $invitation->id,
+                'email' => $invitation->email
+            ]);
+
+            // Resend email
+            if (config('queue.default') === 'sync') {
+                SendInvitationEmail::dispatchSync($invitation);
+            } else {
+                SendInvitationEmail::dispatch($invitation);
+            }
+
             // Resend email
             SendInvitationEmail::dispatch($invitation);
 
             return back()->with('success', 'Invitación reenviada a ' . $invitation->email);
 
         } catch (\Exception $e) {
+            Log::error('Failed to resend invitation', [
+                'invitation_id' => $invitation->id,
+                'email' => $invitation->email,
+                'error' => $e->getMessage()
+            ]);
+
             return back()->with('error', 'Error al reenviar la invitación: ' . $e->getMessage());
         }
     }
@@ -193,5 +249,37 @@ class InvitationController extends Controller
         $invitation->delete();
 
         return back()->with('success', 'Invitación cancelada exitosamente.');
+    }
+
+    // New method to test email sending
+    public function testEmail(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email'
+        ]);
+
+        try {
+            // Create a test invitation
+            $testInvitation = new UserInvitation([
+                'email' => $request->test_email,
+                'token' => 'test-' . Str::random(32),
+                'role' => 'teacher',
+                'invited_by' => Auth::id(),
+                'expires_at' => now()->addHours(24)
+            ]);
+
+            // Try to send test email directly
+            Mail::to($request->test_email)->send(new \App\Mail\UserInvitationMail($testInvitation));
+
+            return back()->with('success', 'Email de prueba enviado a ' . $request->test_email);
+
+        } catch (\Exception $e) {
+            Log::error('Test email failed', [
+                'email' => $request->test_email,
+                'error' => $e->getMessage()
+            ]);
+
+            return back()->with('error', 'Error al enviar email de prueba: ' . $e->getMessage());
+        }
     }
 }

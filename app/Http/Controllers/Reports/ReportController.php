@@ -146,18 +146,22 @@ class ReportController extends Controller
 
         $loans = $query->orderBy('created_at', 'desc')->paginate(20);
         $programs = TechnicalProgram::where('is_active', true)->get();
+        $technicalPrograms = $programs;
 
         // Summary statistics
         $summary = [
-            'total_loans' => $query->count(),
+            'total_loans' => ToolLoan::count(),
+            'loans_this_month' => ToolLoan::whereMonth('created_at', now()->month)
+                ->whereYear('created_at', now()->year)->count(),
             'pending_loans' => ToolLoan::where('status', 'pending')->count(),
             'active_loans' => ToolLoan::whereIn('status', ['approved', 'delivered'])->count(),
             'overdue_loans' => ToolLoan::where('status', 'delivered')
                 ->where('expected_return_date', '<', now())->count(),
             'completed_loans' => ToolLoan::where('status', 'returned')->count(),
+            'return_rate' => $this->calculateReturnRate(),
         ];
 
-        return view('reports.loans', compact('loans', 'programs', 'summary'));
+        return view('reports.loans', compact('loans', 'programs', 'technicalPrograms', 'summary'));
     }
 
     public function usageReport(Request $request)
@@ -228,12 +232,36 @@ class ReportController extends Controller
             ->limit(15)
             ->get();
 
+            // Calcular variables adicionales para la vista
+        $averageUsage = $most_used_tools->count() > 0 ? $most_used_tools->avg('total_quantity_loaned') : 0;
+        $activeCategories = $usage_by_category->count();
+        $averageLoanDuration = ToolLoan::where('status', 'returned')
+            ->whereNotNull('actual_return_date')
+            ->selectRaw('AVG(DATEDIFF(actual_return_date, loan_date)) as avg_days')
+            ->value('avg_days') ?? 0;
+
+        // Tendencias mensuales
+        $monthlyTrends = ToolLoan::select(
+                DB::raw('YEAR(created_at) as year'),
+                DB::raw('MONTH(created_at) as month'),
+                DB::raw('COUNT(*) as total_loans')
+            )
+            ->where('created_at', '>=', now()->subMonths(12))
+            ->groupBy('year', 'month')
+            ->orderBy('year', 'desc')
+            ->orderBy('month', 'desc')
+            ->get();
+
         return view('reports.usage', compact(
             'most_used_tools',
             'usage_by_program',
             'usage_by_category',
             'damaged_lost_tools',
-            'top_borrowers'
+            'top_borrowers',
+            'averageUsage',
+            'activeCategories',
+            'averageLoanDuration',
+            'monthlyTrends'
         ));
     }
 
@@ -422,5 +450,16 @@ class ReportController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    private function calculateReturnRate(): float
+    {
+        $totalLoans = ToolLoan::count();
+        if ($totalLoans === 0) {
+            return 0;
+        }
+
+        $returnedLoans = ToolLoan::where('status', 'returned')->count();
+        return ($returnedLoans / $totalLoans) * 100;
     }
 }

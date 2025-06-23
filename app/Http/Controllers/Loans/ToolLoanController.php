@@ -24,6 +24,12 @@ class ToolLoanController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('permission:view loans')->only(['index', 'show']);
+        $this->middleware('permission:create loans')->only(['create', 'store']);
+        $this->middleware('permission:approve loans')->only(['approve']);
+        $this->middleware('permission:deliver loans')->only(['deliver']);
+        $this->middleware('permission:return loans')->only(['showReturnForm', 'processReturn']);
+        $this->middleware('permission:cancel loans')->only(['cancel']);
     }
 
     public function index(Request $request)
@@ -163,7 +169,6 @@ class ToolLoanController extends Controller
 
     public function approve(ToolLoan $loan)
     {
-        $this->authorize('approve', $loan);
 
         if ($loan->status !== 'pending') {
             return back()->with('error', 'Solo se pueden aprobar préstamos pendientes.');
@@ -226,7 +231,7 @@ class ToolLoanController extends Controller
 
     public function showReturnForm(ToolLoan $loan)
     {
-        $this->authorize('return', $loan);
+
 
         if ($loan->status !== 'delivered') {
             return back()->with('error', 'Solo se pueden devolver préstamos entregados.');
@@ -239,7 +244,7 @@ class ToolLoanController extends Controller
 
     public function processReturn(Request $request, ToolLoan $loan)
     {
-        $this->authorize('return', $loan);
+
 
         if ($loan->status !== 'delivered') {
             return back()->with('error', 'Solo se pueden devolver préstamos entregados.');
@@ -313,8 +318,8 @@ class ToolLoanController extends Controller
         /** @var \App\Models\User $user */
         $user = Auth::user();
         // Only the requestor or admin can cancel
-        if ($loan->user_id !== Auth::id() && !$user->hasRole('admin')) {
-            abort(403, 'Solo puedes cancelar tus propios préstamos.');
+        if ($loan->user_id !== Auth::id() && !$user->can('cancel loans')) {
+            abort(403, 'No tienes permisos para cancelar este préstamo.');
         }
 
         if (!in_array($loan->status, ['pending', 'approved'])) {
