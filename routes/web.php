@@ -29,7 +29,7 @@ Route::post('/invitation/{token}/complete', [InvitationController::class, 'compl
 // Profile Completion Routes (authenticated but incomplete profile)
 Route::middleware(['auth'])->group(function () {
     Route::get('/complete-profile', [ProfileCompletionController::class, 'show'])->name('profile.complete');
-    Route::post('/complete-profile', [ProfileCompletionController::class, 'update']);
+    Route::post('/complete-profile', [ProfileCompletionController::class, 'update'])->name('profile.complete');
 });
 
 // User Invitation Management (Admin only)

@@ -8,6 +8,7 @@ use App\Jobs\SendWelcomeEmail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 
 class ProfileCompletionController extends Controller
@@ -101,17 +102,23 @@ class ProfileCompletionController extends Controller
 
             $user->update($updateData);
 
-            // Send welcome email if enabled
-            if (config('app.welcome_email_enabled', true)) {
-                SendWelcomeEmail::dispatch($user);
+            // Send welcome email if enabled (only if queue is working)
+            try {
+                if (config('app.welcome_email_enabled', true)) {
+                    SendWelcomeEmail::dispatch($user);
+                }
+            } catch (\Exception $e) {
+                // Log error but don't fail the profile completion
+                Log::warning('Failed to send welcome email: ' . $e->getMessage());
             }
 
             return redirect()->route('dashboard')
                 ->with('success', '¡Perfil completado exitosamente! Bienvenido al sistema.');
 
         } catch (\Exception $e) {
+            Log::error('Profile completion error: ' . $e->getMessage());
             return back()->withInput()
-                ->with('error', 'Error al actualizar el perfil: ' . $e->getMessage());
+                ->with('error', 'Error al actualizar el perfil. Por favor, inténtalo de nuevo.');
         }
     }
 }

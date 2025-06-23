@@ -1,61 +1,173 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# 🎒 Media Técnica Inventory System
 
-## About Laravel
+Sistema de gestión de inventario desarrollado por estudiantes y docentes del programa de media técnica en sistemas de la Institución Educativa Bertha Suttner. Diseñado para optimizar el préstamo y control de herramientas usadas en clases técnicas en distintos salones y almacenes.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### ✨ Características Destacadas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- 📖 **Documentación completa** de todas las funcionalidades
+- 🚀 **Guía de instalación paso a paso** con comandos específicos
+- ⚙️ **Configuración detallada** de Brevo SMTP y variables de entorno
+- 👥 **Roles y permisos** explicados claramente por tipo de usuario
+- 📊 **API documentation** con ejemplos de uso `curl`
+- 🛠️ **Comandos Artisan** personalizados para mantenimiento
+- 🚀 **Guía de despliegue** en producción con Apache/Nginx
+- 🔒 **Medidas de seguridad** implementadas y recomendaciones
+- 🐛 **Solución de problemas** comunes con comandos específicos
+- 🎯 **Roadmap** con versiones futuras planificadas
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 🎯 Secciones Incluidas
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+1. **Introducción** con características principales
+2. **Tecnologías** utilizadas
+3. **Requisitos** del sistema
+4. **Instalación** completa paso a paso
+5. **Roles y permisos** detallados
+6. **Guía de uso** por tipo de usuario
+7. **API endpoints** con ejemplos
+8. **Comandos** de mantenimiento
+9. **Monitoreo** y logs
+10. **Despliegue** en producción
+11. **Seguridad** y mejores prácticas
+12. **Solución de problemas**
+13. **Soporte** y contribución
+14. **Roadmap** futuro
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+### 🧪 Tecnologías utilizadas
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- PHP 8.2 (Laravel)
+- MySQL
+- TailwindCSS
+- Blade
+- JavaScript
+- Brevo SMTP
+- Laravel UI
 
-### Premium Partners
+---
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### 🛠 Requisitos del sistema
 
-## Contributing
+- PHP >= 8.1
+- Composer
+- MySQL/MariaDB
+- Node.js & NPM
+- Servidor local (como Laragon, XAMPP o Docker)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+### 📦 Instalación
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git clone https://github.com/usuario/inventory-system.git
+cd inventory-system
+composer install
+npm install && npm run build
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan storage:link
+```
 
-## Security Vulnerabilities
+---
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### ⚙️ Configuración Brevo SMTP
 
-## License
+En tu `.env`:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+MAIL_MAILER=smtp
+MAIL_HOST=smtp-relay.brevo.com
+MAIL_PORT=587
+MAIL_USERNAME=tu_correo@dominio.com
+MAIL_PASSWORD=clave_brevo
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=tu_correo@dominio.com
+MAIL_FROM_NAME="Sistema de Inventario"
+```
+
+---
+
+### 👥 Roles y Permisos
+
+- **Administrador**: gestión completa de usuarios, almacenes, herramientas y préstamos.
+- **Logística**: controla el inventario y valida préstamos.
+- **Docente**: solicita herramientas para sus clases.
+- **Estudiante**: visualiza préstamos y estado de herramientas.
+
+---
+
+### 📘 Guía de Uso
+
+1. Inicia sesión según tu rol.
+2. Administra herramientas desde el panel correspondiente.
+3. Solicita o aprueba préstamos con un solo clic.
+4. Usa el panel de reportes para seguimiento.
+
+---
+
+### 📡 API Endpoints (ejemplo)
+
+```bash
+curl -X POST http://localhost/api/login -d 'email=admin@admin.com&password=admin'
+```
+
+Más documentación en `/routes/api.php`
+
+---
+
+### ⚙️ Comandos Artisan personalizados
+
+```bash
+php artisan user:promote {email} {role}
+php artisan clean:logs
+```
+
+---
+
+### 📈 Monitoreo y Logs
+
+- Laravel Log: `storage/logs/laravel.log`
+- Sesiones en base de datos: tabla `sessions`
+
+---
+
+### 🚀 Despliegue en producción
+
+1. Configura Apache/Nginx apuntando a `/public`
+2. Activa HTTPS
+3. Crea cron jobs si se usan tareas programadas
+4. Configura permisos de carpetas `storage/` y `bootstrap/cache/`
+
+---
+
+### 🔒 Seguridad
+
+- Hash de contraseñas con BCRYPT
+- Verificación de roles
+- Protección CSRF
+- Validación de entrada
+
+---
+
+### 🧩 Solución de Problemas
+
+```bash
+php artisan migrate:fresh --seed
+composer dump-autoload
+php artisan config:clear
+php artisan route:clear
+```
+
+---
+
+### 🤝 Soporte y Contribución
+
+Este proyecto es educativo. Si deseas contribuir, abre un Pull Request.
+
+---

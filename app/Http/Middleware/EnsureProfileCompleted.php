@@ -13,16 +13,15 @@ class EnsureProfileCompleted
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
-        if (Auth::check() && $user->needsProfileCompletion()) {
-            // Allow access to profile completion routes
-            if ($request->routeIs('profile.complete') ||
-                $request->routeIs('logout') ||
-                $request->routeIs('invitation.*')) {
-                return $next($request);
-            }
 
-            return redirect()->route('profile.complete')
-                ->with('info', 'Por favor completa tu perfil para continuar.');
+        // Skip check for profile completion routes
+        if ($request->routeIs('profile.complete') || $request->routeIs('logout')) {
+            return $next($request);
+        }
+
+        // Check if user needs to complete profile
+        if ($user && $user->needsProfileCompletion()) {
+            return redirect()->route('profile.complete');
         }
 
         return $next($request);
