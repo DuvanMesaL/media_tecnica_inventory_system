@@ -21,16 +21,14 @@ class LoanNotificationMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = match($this->type) {
-            'approved' => 'Préstamo Aprobado',
-            'delivered' => 'Herramientas Entregadas',
-            'overdue' => 'Préstamo Vencido - Acción Requerida',
-            'returned' => 'Préstamo Completado',
-            default => 'Notificación de Préstamo'
+            'approved' => 'Préstamo Aprobado - ' . $this->loan->loan_number,
+            'delivered' => 'Préstamo Entregado - ' . $this->loan->loan_number,
+            'returned' => 'Préstamo Devuelto - ' . $this->loan->loan_number,
+            'overdue' => 'Préstamo Vencido - ' . $this->loan->loan_number,
+            default => 'Notificación de Préstamo - ' . $this->loan->loan_number
         };
 
-        return new Envelope(
-            subject: $subject . ' - ' . $this->loan->loan_number,
-        );
+        return new Envelope(subject: $subject);
     }
 
     public function content(): Content

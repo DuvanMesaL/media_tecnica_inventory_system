@@ -15,6 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'teacher' => \App\Http\Middleware\TeacherMiddleware::class,
             'logistics' => \App\Http\Middleware\LogisticsMiddleware::class,
+            'profile.complete' => \App\Http\Middleware\EnsureProfileCompleted::class,
+        ]);
+
+        // Apply profile completion check to web routes
+        $middleware->web(append: [
+            \App\Http\Middleware\EnsureProfileCompleted::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

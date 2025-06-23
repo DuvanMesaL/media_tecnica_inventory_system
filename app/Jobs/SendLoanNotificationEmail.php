@@ -21,7 +21,7 @@ class SendLoanNotificationEmail implements ShouldQueue
 
     public function __construct(
         public ToolLoan $loan,
-        public string $type // 'approved', 'delivered', 'overdue', 'returned'
+        public string $type
     ) {}
 
     public function handle(): void
@@ -32,18 +32,28 @@ class SendLoanNotificationEmail implements ShouldQueue
 
             Log::info('Loan notification email sent successfully', [
                 'loan_id' => $this->loan->id,
-                'user_id' => $this->loan->user_id,
+                'user_email' => $this->loan->user->email,
                 'type' => $this->type
             ]);
         } catch (\Exception $e) {
             Log::error('Failed to send loan notification email', [
                 'loan_id' => $this->loan->id,
-                'user_id' => $this->loan->user_id,
+                'user_email' => $this->loan->user->email,
                 'type' => $this->type,
                 'error' => $e->getMessage()
             ]);
 
             throw $e;
         }
+    }
+
+    public function failed(\Throwable $exception): void
+    {
+        Log::error('Loan notification email job failed permanently', [
+            'loan_id' => $this->loan->id,
+            'user_email' => $this->loan->user->email,
+            'type' => $this->type,
+            'error' => $exception->getMessage()
+        ]);
     }
 }
