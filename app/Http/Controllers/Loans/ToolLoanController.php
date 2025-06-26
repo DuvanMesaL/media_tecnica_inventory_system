@@ -212,8 +212,6 @@ class ToolLoanController extends Controller
 
     public function deliver(ToolLoan $loan)
     {
-        $this->authorize('deliver', $loan);
-
         if ($loan->status !== 'approved') {
             return back()->with('error', 'Solo se pueden entregar préstamos aprobados.');
         }

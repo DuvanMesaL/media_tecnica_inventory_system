@@ -60,16 +60,16 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('loans', ToolLoanController::class);
     Route::post('/loans/{loan}/approve', [ToolLoanController::class, 'approve'])
         ->name('loans.approve')
-        ->middleware('logistics');
+        ->middleware(\App\Http\Middleware\LogisticsMiddleware::class);
     Route::post('/loans/{loan}/deliver', [ToolLoanController::class, 'deliver'])
         ->name('loans.deliver')
-        ->middleware('logistics');
+        ->middleware(\App\Http\Middleware\LogisticsMiddleware::class);
     Route::get('/loans/{loan}/return', [ToolLoanController::class, 'showReturnForm'])
         ->name('loans.return.form')
-        ->middleware('logistics');
+        ->middleware(\App\Http\Middleware\LogisticsMiddleware::class);
     Route::post('/loans/{loan}/return', [ToolLoanController::class, 'processReturn'])
         ->name('loans.return')
-        ->middleware('logistics');
+        ->middleware(\App\Http\Middleware\LogisticsMiddleware::class);
     Route::post('/loans/{loan}/cancel', [ToolLoanController::class, 'cancel'])->name('loans.cancel');
 
     // API Routes for AJAX

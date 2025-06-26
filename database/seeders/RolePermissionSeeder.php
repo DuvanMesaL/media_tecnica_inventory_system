@@ -18,6 +18,7 @@ class RolePermissionSeeder extends Seeder
             'create tools',
             'edit tools',
             'delete tools',
+            'manage tools',
 
             // Loan permissions
             'view loans',
@@ -32,7 +33,7 @@ class RolePermissionSeeder extends Seeder
             'create users',
             'edit users',
             'delete users',
-            'manage users', // <- Agregado este permiso
+            'manage users',
             'manage invitations',
 
             // System permissions
