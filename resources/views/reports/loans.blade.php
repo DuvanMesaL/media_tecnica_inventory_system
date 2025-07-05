@@ -186,10 +186,10 @@
                                     <div class="text-sm text-gray-500">{{ $loan->toolLoanItems->sum('quantity_requested') }} unidades</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                    <div>Solicitado: {{ $loan->requested_date->format('d/m/Y') }}</div>
-                                    <div class="{{ $loan->expected_return_date < now() && $loan->status !== 'returned' ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
-                                        Retorno: {{ $loan->expected_return_date->format('d/m/Y') }}
-                                        @if($loan->expected_return_date < now() && $loan->status !== 'returned')
+                                    <div>Solicitado: {{ $loan->requested_date ? $loan->requested_date->format('d/m/Y') : ($loan->loan_date ? $loan->loan_date->format('d/m/Y') : 'N/A') }}</div>
+                                    <div class="{{ $loan->expected_return_date && $loan->expected_return_date < now() && $loan->status !== 'returned' ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
+                                        Retorno: {{ $loan->expected_return_date ? $loan->expected_return_date->format('d/m/Y') : 'N/A' }}
+                                        @if($loan->expected_return_date && $loan->expected_return_date < now() && $loan->status !== 'returned')
                                             <span class="ml-1 text-xs">({{ now()->diffInDays($loan->expected_return_date) }} días vencido)</span>
                                         @endif
                                     </div>

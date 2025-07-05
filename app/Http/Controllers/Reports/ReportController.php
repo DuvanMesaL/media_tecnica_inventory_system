@@ -362,7 +362,7 @@ class ReportController extends Controller
             // CSV data
             foreach ($loans as $loan) {
                 $daysOverdue = '';
-                if ($loan->status === 'delivered' && $loan->expected_return_date < now()) {
+                if ($loan->status === 'delivered' && $loan->expected_return_date && $loan->expected_return_date < now()) {
                     $daysOverdue = now()->diffInDays($loan->expected_return_date);
                 }
 
@@ -370,11 +370,11 @@ class ReportController extends Controller
                     $loan->loan_number,
                     $loan->user->name,
                     $loan->technicalProgram->name,
-                    $loan->classroom->name,
-                    $loan->warehouse->name,
+                    $loan->classroom ? $loan->classroom->name : 'N/A',
+                    $loan->warehouse ? $loan->warehouse->name : 'N/A',
                     ucfirst($loan->status),
-                    $loan->loan_date->format('Y-m-d'),
-                    $loan->expected_return_date->format('Y-m-d'),
+                    $loan->loan_date ? $loan->loan_date->format('Y-m-d') : 'N/A',
+                    $loan->expected_return_date ? $loan->expected_return_date->format('Y-m-d') : 'N/A',
                     $loan->actual_return_date ? $loan->actual_return_date->format('Y-m-d') : '',
                     $daysOverdue
                 ]);
@@ -441,8 +441,8 @@ class ReportController extends Controller
                     $item->quantity_delivered,
                     $item->quantity_returned,
                     $item->condition_returned ? ucfirst($item->condition_returned) : '',
-                    $item->loan_date,
-                    $item->actual_return_date
+                    $item->loan_date ? $item->loan_date : 'N/A',
+                    $item->actual_return_date ? $item->actual_return_date : ''
                 ]);
             }
 
