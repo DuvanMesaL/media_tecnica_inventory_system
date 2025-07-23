@@ -86,13 +86,26 @@ class TechnicalProgramController extends Controller
 
     public function destroy(TechnicalProgram $program)
     {
-        if ($program->users()->count() > 0 || $program->classrooms()->count() > 0) {
-            return back()->with('error', 'No se puede eliminar un programa que tiene usuarios o aulas asignadas.');
+        // Check if program has associated users
+        $usersCount = $program->users()->count();
+        $classroomsCount = $program->classrooms()->count();
+        $loansCount = $program->toolLoans()->count();
+
+        if ($usersCount > 0 || $classroomsCount > 0 || $loansCount > 0) {
+            $associations = [];
+            if ($usersCount > 0) $associations[] = "{$usersCount} usuario(s)";
+            if ($classroomsCount > 0) $associations[] = "{$classroomsCount} aula(s)";
+            if ($loansCount > 0) $associations[] = "{$loansCount} préstamo(s)";
+
+            $message = 'No se puede eliminar el programa técnico porque tiene ' . implode(', ', $associations) . ' asociado(s).';
+
+            return back()->with('error', $message);
         }
 
+        $programName = $program->name;
         $program->delete();
 
         return redirect()->route('programs.index')
-            ->with('success', 'Programa técnico eliminado exitosamente.');
+            ->with('success', "El programa técnico '{$programName}' ha sido eliminado exitosamente.");
     }
 }

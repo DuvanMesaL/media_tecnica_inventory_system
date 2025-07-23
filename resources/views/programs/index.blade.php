@@ -39,6 +39,13 @@
             </div>
         @endif
 
+        @if(session('error'))
+            <div class="alert alert-error">
+                <i class="fas fa-exclamation-circle"></i>
+                {{ session('error') }}
+            </div>
+        @endif
+
         @if($programs->count() > 0)
             <div class="programs-grid">
                 @foreach($programs as $program)
@@ -142,7 +149,9 @@
             <h3>Confirmar Eliminación</h3>
         </div>
         <div class="modal-body">
-            <p>¿Estás seguro de que deseas eliminar este programa? Esta acción no se puede deshacer.</p>
+            <p>¿Estás seguro de que deseas eliminar este programa técnico?</p>
+            <p><strong>Nota:</strong> Solo se pueden eliminar programas que no tengan usuarios, aulas o préstamos asociados.</p>
+            <p class="text-danger"><small>Esta acción no se puede deshacer.</small></p>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeDeleteModal()">Cancelar</button>
@@ -288,6 +297,12 @@
     background: #f0fdf4;
     color: #166534;
     border: 1px solid #bbf7d0;
+}
+
+.alert-error {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
 }
 
 .programs-grid {

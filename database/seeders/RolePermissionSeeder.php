@@ -84,7 +84,7 @@ class RolePermissionSeeder extends Seeder
     {
         // Buscar usuarios por email y asignar roles
         $adminEmails = [
-            'Duvanmesa2415@gmail.com',
+            'admin@school.edu',
             'administrator@school.edu',
             'admin@example.com'
         ];
